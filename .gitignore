@@ -1,0 +1,24 @@
+# Service account keys - NEVER commit these!
+github-actions-key.json
+*.json
+
+# OS files
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Logs
+*.log

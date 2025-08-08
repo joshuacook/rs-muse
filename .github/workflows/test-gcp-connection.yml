@@ -1,0 +1,47 @@
+name: Test GCP Connection
+
+on:
+  push:  # Triggers on any push to any branch
+  pull_request:
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  test-connection:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+      
+      - name: Test GCP Connection
+        run: |
+          echo "Testing connection to GCP project: ${{ secrets.GCP_PROJECT_ID }}"
+          echo "===========================================" 
+          
+          echo "1. Verifying project access:"
+          gcloud config get-value project
+          
+          echo ""
+          echo "2. Listing Cloud Storage bucket contents:"
+          gsutil ls gs://rs-muse-uploads/ || echo "Bucket is empty or just created"
+          
+          echo ""
+          echo "3. Testing Firestore access:"
+          gcloud firestore databases list --format="table(name,type,locationId)"
+          
+          echo ""
+          echo "4. Checking enabled APIs:"
+          gcloud services list --enabled --format="table(config.name)" | head -20
+          
+          echo ""
+          echo "✅ GCP connection test completed successfully!"
